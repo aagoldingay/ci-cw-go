@@ -11,7 +11,7 @@ func main() {
 	numberOfGoods := 20
 	rand.Seed(time.Now().UnixNano())
 	p := PricingProblem{}
-	//p := PricingProblem.New(20, false) //courseworkInstance
+	//p = PricingProblem.MakeProblem(p, numberOfGoods, false) //courseworkInstance
 	p = PricingProblem.MakeProblem(p, numberOfGoods, true) //randomInstance
 
 	prices := make([]float64, numberOfGoods)
