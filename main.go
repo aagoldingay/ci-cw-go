@@ -5,14 +5,16 @@ import (
 	"log"
 	"math/rand"
 	"time"
+
+	"github.com/aagoldingay/ci-cw-go/pricingproblem"
 )
 
 func main() {
 	numberOfGoods := 20
 	rand.Seed(time.Now().UnixNano())
-	p := PricingProblem{}
-	//p = PricingProblem.MakeProblem(p, numberOfGoods, false) //courseworkInstance
-	p = PricingProblem.MakeProblem(p, numberOfGoods, true) //randomInstance
+	p := pricingproblem.PricingProblem{}
+	//p = p.MakeProblem(numberOfGoods, false) //courseworkInstance
+	p = p.MakeProblem(numberOfGoods, true) //randomInstance
 
 	prices := make([]float64, numberOfGoods)
 	newPrices := make([]float64, numberOfGoods)
