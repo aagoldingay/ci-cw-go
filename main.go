@@ -28,7 +28,6 @@ func main() {
 		log.Fatal(err)
 	}
 	for i := 0; i < 100; i++ {
-		fmt.Printf("Best revenue so far is %v\n", bestRevenue)
 
 		for j := 0; j < numberOfGoods; j++ {
 			newPrices[j] = rand.Float64() * 10
@@ -41,8 +40,8 @@ func main() {
 		if newRevenue > bestRevenue {
 			copy(prices, newPrices)
 			bestRevenue = newRevenue
+			fmt.Printf("New best revenue : %v\n", newRevenue)
 		}
 	}
-
 	fmt.Printf("Final best revenue : %v\n", bestRevenue)
 }
