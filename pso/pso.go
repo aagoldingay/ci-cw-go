@@ -4,7 +4,7 @@ import (
 	"log"
 	"math/rand"
 
-	"github.com/aagoldingay/ci-cw-go/pricingproblem"
+	pp "github.com/aagoldingay/ci-cw-go/pricingproblem"
 )
 
 //movement weightings
@@ -23,19 +23,19 @@ type Particle struct {
 
 // NewParticle generates and returns a new instanc of a particle
 // With a randomly generated design
-func NewParticle(numberOfGoods int, pp *pricingproblem.PricingProblem) *Particle {
+func NewParticle(numberOfGoods int, pr *pp.PricingProblem) *Particle {
 	p := new(Particle)
 	p.prices = randomPrices(numberOfGoods)
 	p.velocity = initialVelocity(p.prices, randomPrices(numberOfGoods))
 	p.bestPrices = make([]float64, len(p.prices))
 	copy(p.bestPrices, p.prices) //important to copy due to pass by reference
-	p.currentRevenue = evaluatePrices(numberOfGoods, p.prices, pp)
+	p.currentRevenue = evaluatePrices(numberOfGoods, p.prices, pr)
 	p.bestRevenue = p.currentRevenue
 	return p
 }
 
-func evaluatePrices(numberOfGoods int, prices []float64, pp *pricingproblem.PricingProblem) float64 {
-	revenue, err := pp.Evaluate(prices)
+func evaluatePrices(numberOfGoods int, prices []float64, pr *pp.PricingProblem) float64 {
+	revenue, err := pr.Evaluate(prices)
 	if err != nil {
 		log.Fatal(err)
 	}

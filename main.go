@@ -6,13 +6,13 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/aagoldingay/ci-cw-go/pricingproblem"
+	pp "github.com/aagoldingay/ci-cw-go/pricingproblem"
 )
 
 func main() {
 	numberOfGoods := 20
 	rand.Seed(time.Now().UnixNano())
-	p := pricingproblem.PricingProblem{}
+	p := pp.PricingProblem{}
 	//p = p.MakeProblem(numberOfGoods, false) //courseworkInstance
 	p = p.MakeProblem(numberOfGoods, true) //randomInstance
 
