@@ -13,8 +13,8 @@ func main() {
 	numberOfGoods := 20
 	rand.Seed(time.Now().UnixNano())
 	p := pp.PricingProblem{}
-	//p = p.MakeProblem(numberOfGoods, false) //courseworkInstance
-	p = p.MakeProblem(numberOfGoods, true) //randomInstance
+	//p = *p.MakeProblem(numberOfGoods, false) //courseworkInstance
+	p = *p.MakeProblem(numberOfGoods, true) //randomInstance
 
 	prices := make([]float64, numberOfGoods)
 	newPrices := make([]float64, numberOfGoods)
@@ -27,7 +27,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 200; i++ {
 
 		for j := 0; j < numberOfGoods; j++ {
 			newPrices[j] = rand.Float64() * 10

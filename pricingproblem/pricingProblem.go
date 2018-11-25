@@ -17,7 +17,7 @@ type PricingProblem struct {
 // MakeProblem instantiates a new PricingProblem
 // n = number of Goods for the pricing problem
 // random = whether to use a random seed, else seed = 0
-func (p PricingProblem) MakeProblem(n int, random bool) PricingProblem {
+func (p *PricingProblem) MakeProblem(n int, random bool) *PricingProblem {
 	rand.Seed(time.Now().UnixNano())
 	if !random {
 		rand.Seed(0)
@@ -72,13 +72,13 @@ func (p PricingProblem) MakeProblem(n int, random bool) PricingProblem {
 }
 
 // Bounds returns the bnds variable of a PricingProblem struct
-func (p PricingProblem) Bounds() [][]float64 {
+func (p *PricingProblem) Bounds() [][]float64 {
 	return p.bnds
 }
 
 // IsValid checks whether a vector of prices is valid
 // A valid price vector is one in which all prices are at least 1p and at most £10.00
-func (p PricingProblem) IsValid(prices []float64) bool {
+func (p *PricingProblem) IsValid(prices []float64) bool {
 	if len(prices) != len(p.Bounds()) {
 		return false
 	}
@@ -92,7 +92,7 @@ func (p PricingProblem) IsValid(prices []float64) bool {
 }
 
 // Evaluate gets the total revenue from pricing goods as given in parameter
-func (p PricingProblem) Evaluate(prices []float64) (float64, error) {
+func (p *PricingProblem) Evaluate(prices []float64) (float64, error) {
 	if len(prices) != len(p.Bounds()) {
 		return 0.0, errors.New("PricingProblem::evaluate called on price array of the wrong size")
 	}
@@ -108,7 +108,7 @@ func (p PricingProblem) Evaluate(prices []float64) (float64, error) {
 }
 
 // get the demand for good i at price p
-func (p PricingProblem) getDemand(i int, prices []float64) int {
+func (p *PricingProblem) getDemand(i int, prices []float64) int {
 	demand := p.getGoodDemand(i, prices[i]) + p.getResidualDemand(i, prices)
 
 	// Second sanity check - still cannot have more demand than the market holds
@@ -118,7 +118,7 @@ func (p PricingProblem) getDemand(i int, prices []float64) int {
 	return demand
 }
 
-func (p PricingProblem) getGoodDemand(i int, price float64) int {
+func (p *PricingProblem) getGoodDemand(i int, price float64) int {
 	var demand float64
 	switch p.priceResponseType[i] {
 	case 0: // Linear
@@ -145,7 +145,7 @@ func (p PricingProblem) getGoodDemand(i int, price float64) int {
 	return int(math.Round(demand))
 }
 
-func (p PricingProblem) getResidualDemand(i int, prices []float64) int {
+func (p *PricingProblem) getResidualDemand(i int, prices []float64) int {
 	var demand float64
 	for j := 0; j < len(p.priceResponse); j++ {
 		if i != j {
@@ -155,14 +155,14 @@ func (p PricingProblem) getResidualDemand(i int, prices []float64) int {
 	return int(math.Round(demand))
 }
 
-func (p PricingProblem) getRandomTotalDemand() float64 {
+func (p *PricingProblem) getRandomTotalDemand() float64 {
 	return rand.Float64() * 100
 }
 
-func (p PricingProblem) getRandomSatiatingPrice() float64 {
+func (p *PricingProblem) getRandomSatiatingPrice() float64 {
 	return rand.Float64() * 10
 }
 
-func (p PricingProblem) getRandomElasticity() float64 {
+func (p *PricingProblem) getRandomElasticity() float64 {
 	return rand.Float64()
 }
