@@ -39,7 +39,7 @@ func NewParticle(numGoods int, pr *pp.PricingProblem) *Particle {
 // param: gBestPrices passes information of the global best prices across a whole population of particles
 func (p *Particle) Update(numGoods int, gBestPrices []float64, pr *pp.PricingProblem) {
 	copy(p.velocity, calculateVelocity(p.velocity, p.prices, p.bestPrices, gBestPrices))
-	//copy(p.prices, updatePosition(p.prices, p.velocity, numGoods))
+	copy(p.prices, updatePosition(p.prices, p.velocity, numGoods, pr))
 	p.currentRevenue = evaluatePrices(p.prices, pr)
 	if p.currentRevenue < p.bestRevenue {
 		copy(p.bestPrices, p.prices)
@@ -85,4 +85,21 @@ func randomPrices(numGoods int, pr *pp.PricingProblem) []float64 {
 		}
 	}
 	return prices
+}
+
+func updatePosition(prices, velocity []float64, numGoods int, pr *pp.PricingProblem) []float64 {
+	newPrices := make([]float64, len(prices))
+	for i := 0; i < len(prices); i++ {
+		newPrices[i] = prices[i] + velocity[i]
+	}
+	bounds := pr.Bounds()
+	for i := 0; i < len(velocity); i++ {
+		if newPrices[i] < bounds[i][0] {
+			newPrices[i] += float64(numGoods) / 10000.0 // e.g. numGoods = 20 = 0.002
+		}
+		if newPrices[i] > bounds[i][1] {
+			newPrices[i] -= float64(numGoods) / 10000.0 // e.g. numGoods = 20 = 0.002
+		}
+	}
+	return newPrices
 }
