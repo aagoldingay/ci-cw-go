@@ -8,6 +8,13 @@ import (
 	pp "github.com/aagoldingay/ci-cw-go/pricingproblem"
 )
 
+// Revenue is a struct acting as a payload to access prices and revenues
+// intended to store best revenue
+type Revenue struct {
+	revenue float64
+	prices  []float64
+}
+
 // PSOSearch is a CI algorithm approach to finding the highest possible revenue
 func PSOSearch(numGoods, numParticles int) {
 	p := pp.PricingProblem{}
@@ -29,7 +36,8 @@ func RandomSearch(numGoods int) {
 		prices[i] = rand.Float64() * 10
 	}
 
-	bestRevenue, err := p.Evaluate(prices)
+	bRevenue, err := p.Evaluate(prices)
+	bestRevenue := Revenue{bRevenue, prices}
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -43,11 +51,11 @@ func RandomSearch(numGoods int) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		if newRevenue > bestRevenue {
-			copy(prices, newPrices)
-			bestRevenue = newRevenue
-			fmt.Printf("New best revenue : %v | %v\n", newRevenue, prices)
+		if newRevenue > bestRevenue.revenue {
+			copy(bestRevenue.prices, newPrices)
+			bestRevenue.revenue = newRevenue
+			fmt.Printf("New best revenue : %v \n", bestRevenue)
 		}
 	}
-	fmt.Printf("Final best revenue : %v | %v\n", bestRevenue, prices)
+	fmt.Printf("Final best revenue : %v\n", bestRevenue)
 }
