@@ -92,14 +92,5 @@ func updatePosition(prices, velocity []float64, numGoods int, pr *pp.PricingProb
 	for i := 0; i < len(prices); i++ {
 		newPrices[i] = prices[i] + velocity[i]
 	}
-	bounds := pr.Bounds()
-	for i := 0; i < len(velocity); i++ {
-		if newPrices[i] < bounds[i][0] {
-			newPrices[i] += float64(numGoods) / 10000.0 // e.g. numGoods = 20 = 0.002
-		}
-		if newPrices[i] > bounds[i][1] {
-			newPrices[i] -= float64(numGoods) / 10000.0 // e.g. numGoods = 20 = 0.002
-		}
-	}
 	return newPrices
 }

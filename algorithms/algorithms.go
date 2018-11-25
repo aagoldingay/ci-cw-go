@@ -4,17 +4,22 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"time"
 
 	pp "github.com/aagoldingay/ci-cw-go/pricingproblem"
 )
 
+// PSOSearch is a CI algorithm approach to finding the highest possible revenue
+func PSOSearch(numGoods, numParticles int) {
+	p := pp.PricingProblem{}
+	//p = *p.MakeProblem(numGoods, false) //courseworkInstance
+	p = *p.MakeProblem(numGoods, true) //randomInstance
+}
+
 // RandomSearch is a heuristic method of attempting to find the highest possible revenue
 // Approach : Create an array of random prices len(numGoods) and compare against the current best Revenue
 func RandomSearch(numGoods int) {
-	rand.Seed(time.Now().UnixNano())
 	p := pp.PricingProblem{}
-	//p = *p.MakeProblem(numberOfGoods, false) //courseworkInstance
+	//p = *p.MakeProblem(numGoods, false) //courseworkInstance
 	p = *p.MakeProblem(numGoods, true) //randomInstance
 
 	prices := make([]float64, numGoods)
