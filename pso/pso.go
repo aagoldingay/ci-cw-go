@@ -18,32 +18,32 @@ const (
 // Particle is a struct representing a single particle entity
 // Will attempt to find optimal market pricing
 type Particle struct {
-	prices, velocity, bestPrices []float64
-	currentRevenue, bestRevenue  float64
+	Prices, velocity, BestPrices []float64
+	CurrentRevenue, BestRevenue  float64
 }
 
 // NewParticle generates and returns a new instanc of a particle
 // With a randomly generated design
 func NewParticle(numGoods int, pr *pp.PricingProblem) *Particle {
 	p := new(Particle)
-	p.prices = randomPrices(numGoods, pr)
-	p.velocity = initialVelocity(p.prices, randomPrices(numGoods, pr))
-	p.bestPrices = make([]float64, len(p.prices))
-	copy(p.bestPrices, p.prices) //important to copy due to pass by reference
-	p.currentRevenue = evaluatePrices(p.prices, pr)
-	p.bestRevenue = p.currentRevenue
+	p.Prices = randomPrices(numGoods, pr)
+	p.velocity = initialVelocity(p.Prices, randomPrices(numGoods, pr))
+	p.BestPrices = make([]float64, len(p.Prices))
+	copy(p.BestPrices, p.Prices) //important to copy due to pass by reference
+	p.CurrentRevenue = evaluatePrices(p.Prices, pr)
+	p.BestRevenue = p.CurrentRevenue
 	return p
 }
 
 // Update handles the repositioning and evaluation of a particle
 // param: gBestPrices passes information of the global best prices across a whole population of particles
 func (p *Particle) Update(numGoods int, gBestPrices []float64, pr *pp.PricingProblem) {
-	copy(p.velocity, calculateVelocity(p.velocity, p.prices, p.bestPrices, gBestPrices))
-	copy(p.prices, updatePosition(p.prices, p.velocity, numGoods, pr))
-	p.currentRevenue = evaluatePrices(p.prices, pr)
-	if p.currentRevenue < p.bestRevenue {
-		copy(p.bestPrices, p.prices)
-		p.bestRevenue = p.currentRevenue
+	copy(p.velocity, calculateVelocity(p.velocity, p.Prices, p.BestPrices, gBestPrices))
+	copy(p.Prices, updatePosition(p.Prices, p.velocity, numGoods, pr))
+	p.CurrentRevenue = evaluatePrices(p.Prices, pr)
+	if p.CurrentRevenue > p.BestRevenue {
+		copy(p.BestPrices, p.Prices)
+		p.BestRevenue = p.CurrentRevenue
 	}
 }
 

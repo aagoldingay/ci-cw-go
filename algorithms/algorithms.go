@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"time"
 
 	pp "github.com/aagoldingay/ci-cw-go/pricingproblem"
+	"github.com/aagoldingay/ci-cw-go/pso"
 )
 
 // Revenue is a struct acting as a payload to access prices and revenues
@@ -18,16 +20,46 @@ type Revenue struct {
 // PSOSearch is a CI algorithm approach to finding the highest possible revenue
 func PSOSearch(numGoods, numParticles int) {
 	p := pp.PricingProblem{}
-	//p = *p.MakeProblem(numGoods, false) //courseworkInstance
-	p = *p.MakeProblem(numGoods, true) //randomInstance
+	p = *p.MakeProblem(numGoods, false) //courseworkInstance
+	// p = *p.MakeProblem(numGoods, true) //randomInstance
+	bestRev := Revenue{0.0, []float64{}}
+	particles := []*pso.Particle{}
+	fmt.Printf("Creating particles ...\n")
+	for i := 0; i < numParticles; i++ {
+		particles = append(particles, pso.NewParticle(numGoods, &p))
+		if particles[i].BestRevenue > bestRev.revenue {
+			bestRev.prices = particles[i].BestPrices
+			bestRev.revenue = particles[i].BestRevenue
+		}
+	}
+	fmt.Printf("Particles created, commencing search...\n")
+
+	timeout := time.Now().Add(20 * time.Second)
+
+	for {
+		if time.Now().After(timeout) {
+			fmt.Println("Time limit reached. Ended search")
+			break
+		}
+
+		for i := 0; i < len(particles); i++ {
+			particles[i].Update(numGoods, bestRev.prices, &p)
+
+			if particles[i].BestRevenue > bestRev.revenue {
+				bestRev.prices = particles[i].BestPrices
+				bestRev.revenue = particles[i].BestRevenue
+				fmt.Printf("New best: prices : %v | best revenue : %v\n", bestRev.prices, bestRev.revenue)
+			}
+		}
+	}
 }
 
 // RandomSearch is a heuristic method of attempting to find the highest possible revenue
 // Approach : Create an array of random prices len(numGoods) and compare against the current best Revenue
 func RandomSearch(numGoods int) {
 	p := pp.PricingProblem{}
-	//p = *p.MakeProblem(numGoods, false) //courseworkInstance
-	p = *p.MakeProblem(numGoods, true) //randomInstance
+	p = *p.MakeProblem(numGoods, false) //courseworkInstance
+	// p = *p.MakeProblem(numGoods, true) //randomInstance
 
 	prices := make([]float64, numGoods)
 	newPrices := make([]float64, numGoods)
