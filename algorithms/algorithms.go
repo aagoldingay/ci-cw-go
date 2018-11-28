@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/aagoldingay/ci-cw-go/ais"
 	pp "github.com/aagoldingay/ci-cw-go/pricingproblem"
 	"github.com/aagoldingay/ci-cw-go/pso"
 )
@@ -13,8 +14,22 @@ import (
 // Revenue is a struct acting as a payload to access prices and revenues
 // intended to store best revenue
 type Revenue struct {
-	revenue float64
 	prices  []float64
+	revenue float64
+}
+
+// AISSearch is a CI algorithm approach to finding the highest possible revenue
+func AISSearch(numGoods, numPopulation, replacement, cloneSizeFactor int) {
+	p := pp.PricingProblem{}
+	p = *p.MakeProblem(numGoods, false) //courseworkInstance
+	// p = *p.MakeProblem(numGoods, true) //randomInstance
+	population := ais.NewImmuneSystem(numGoods, numPopulation, replacement, cloneSizeFactor, &p)
+	fmt.Printf("best cell: %v\n", population.BestCell)
+
+	for i := 0; i < 100; i++ {
+		population.Update()
+		fmt.Printf("[%v] best cell : %v\n", i+1, population.BestCell)
+	}
 }
 
 // PSOSearch is a CI algorithm approach to finding the highest possible revenue
@@ -22,7 +37,7 @@ func PSOSearch(numGoods, numParticles int) {
 	p := pp.PricingProblem{}
 	p = *p.MakeProblem(numGoods, false) //courseworkInstance
 	// p = *p.MakeProblem(numGoods, true) //randomInstance
-	bestRev := Revenue{0.0, []float64{}}
+	bestRev := Revenue{[]float64{}, 0.0}
 	particles := []*pso.Particle{}
 	fmt.Printf("Creating particles ...\n")
 	for i := 0; i < numParticles; i++ {
@@ -34,7 +49,7 @@ func PSOSearch(numGoods, numParticles int) {
 	}
 	fmt.Printf("Particles created, commencing search...\n")
 
-	timeout := time.Now().Add(20 * time.Second)
+	timeout := time.Now().Add(10 * time.Second)
 
 	for {
 		if time.Now().After(timeout) {
@@ -69,7 +84,7 @@ func RandomSearch(numGoods int) {
 	}
 
 	bRevenue, err := p.Evaluate(prices)
-	bestRevenue := Revenue{bRevenue, prices}
+	bestRevenue := Revenue{prices, bRevenue}
 	if err != nil {
 		log.Fatal(err)
 	}
