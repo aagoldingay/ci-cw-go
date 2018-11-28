@@ -23,7 +23,7 @@ type ImmuneSystem struct {
 	NormalisedRevenue            float64
 }
 
-const bestFitness = 4000.0
+const bestFitness = 8000.0
 
 // NewImmuneSystem generates a new population of cells (prices and revenue)
 func NewImmuneSystem(numGoods, numPopulation, replacement, cloneSizeFactor int, pr *pp.PricingProblem) *ImmuneSystem {
@@ -115,7 +115,7 @@ func (is *ImmuneSystem) contiguousHyperMutation(prices []float64) TCell {
 				}
 			}
 		} else {
-			newPrices = append(newPrices, newPrices[i])
+			newPrices = append(newPrices, prices[i])
 		}
 	}
 	for i := hotspotB; i > hotspotA; i-- {
