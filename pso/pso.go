@@ -10,13 +10,13 @@ import (
 
 //movement weightings
 const (
-	inertia    = 0.721  // weighting of momentum maintained between steps
-	cognitiveW = 1.1193 // weighting towards personal best position
-	socialW    = 1.1193 // weighting towards global best position
+	inertia    = 0.721 // weighting of momentum maintained between steps
+	cognitiveW = 1.12  // (default) 1.1193 // weighting towards personal best position
+	socialW    = 1.1   // (default) 1.1193 // weighting towards global best position
 )
 
 // Particle is a struct representing a single particle entity
-// Will attempt to find optimal market pricing
+// Used to find optimal market pricing
 type Particle struct {
 	prices, velocity, bestPrices []float64
 	currentRevenue, bestRevenue  float64
@@ -33,14 +33,17 @@ type Swarm struct {
 
 // NewSwarm generates a new population of Particles
 func NewSwarm(numGoods int, numParticles int, pr *pp.PricingProblem) *Swarm {
+	// define and populate new swarm
 	sw := new(Swarm)
 	sw.problem = pr
 	sw.numGoods = numGoods
 	sw.Particles = make([]*Particle, numParticles)
 
+	// create the population of particles
 	for i := 0; i < numParticles; i++ {
 		sw.Particles[i] = sw.NewParticle(numGoods)
 		if sw.Particles[i].currentRevenue > sw.BestRevenue {
+			// assign values to best prices and revenue
 			sw.BestPrices = sw.Particles[i].prices
 			sw.BestRevenue = sw.Particles[i].currentRevenue
 		}
@@ -51,6 +54,7 @@ func NewSwarm(numGoods int, numParticles int, pr *pp.PricingProblem) *Swarm {
 // NewParticle generates and returns a new instanc of a particle
 // With a randomly generated design
 func (sw *Swarm) NewParticle(numGoods int) *Particle {
+	//define and populate new particle
 	p := new(Particle)
 	p.prices = randomPrices(numGoods, sw.problem)
 	p.velocity = initialVelocity(p.prices, randomPrices(numGoods, sw.problem))
@@ -66,20 +70,21 @@ func (sw *Swarm) Update() {
 	for i := 0; i < len(sw.Particles); i++ {
 		sw.Particles[i].Update(sw.numGoods, sw.BestPrices, sw.problem)
 		if sw.Particles[i].currentRevenue > sw.BestRevenue {
+			// ensures the best result is updated as necessary
 			sw.BestPrices = sw.Particles[i].prices
 			sw.BestRevenue = sw.Particles[i].currentRevenue
 		}
 	}
 }
 
-// Update handles the repositioning and evaluation of a particle
+// Update (Particle) handles the repositioning and evaluation of a particle
 // param: gBestPrices passes information of the global best prices across a whole population of particles
 func (p *Particle) Update(numGoods int, gBestPrices []float64, pr *pp.PricingProblem) {
-	copy(p.velocity, calculateVelocity(p.velocity, p.prices, p.bestPrices, gBestPrices))
-	copy(p.prices, updatePosition(p.prices, p.velocity, numGoods, pr))
+	copy(p.velocity, calculateVelocity(p.velocity, p.prices, p.bestPrices, gBestPrices)) //important to copy due to pass by reference
+	copy(p.prices, updatePosition(p.prices, p.velocity, pr))                             //important to copy due to pass by reference
 	p.currentRevenue = evaluatePrices(p.prices, pr)
 	if p.currentRevenue > p.bestRevenue {
-		copy(p.bestPrices, p.prices)
+		copy(p.bestPrices, p.prices) //important to copy due to pass by reference
 		p.bestRevenue = p.currentRevenue
 	}
 }
@@ -96,6 +101,7 @@ func calculateVelocity(velocity, prices, pBestPrices, gBestPrices []float64) []f
 	return newVelocity
 }
 
+// evaluatePrices calculates the revenue for the provided prices
 func evaluatePrices(prices []float64, pr *pp.PricingProblem) float64 {
 	revenue, err := pr.Evaluate(prices)
 	if err != nil {
@@ -104,6 +110,7 @@ func evaluatePrices(prices []float64, pr *pp.PricingProblem) float64 {
 	return revenue
 }
 
+// initialVelocity calculates the initial velocity by comparing two randomly generated arrays of prices
 func initialVelocity(firstPrices, secondPrices []float64) []float64 {
 	velocity := make([]float64, len(firstPrices))
 
@@ -124,7 +131,8 @@ func randomPrices(numGoods int, pr *pp.PricingProblem) []float64 {
 	return prices
 }
 
-func updatePosition(prices, velocity []float64, numGoods int, pr *pp.PricingProblem) []float64 {
+// updatePosition uses the velocity to update the location of the Particle
+func updatePosition(prices, velocity []float64, pr *pp.PricingProblem) []float64 {
 	newPrices := make([]float64, len(prices))
 	for i := 0; i < len(prices); i++ {
 		newPrices[i] = prices[i] + velocity[i]

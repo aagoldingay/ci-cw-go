@@ -159,6 +159,7 @@ func (p *PricingProblem) getRandomTotalDemand() float64 {
 	return rand.Float64() * 100
 }
 
+// get random desirable price
 func (p *PricingProblem) getRandomSatiatingPrice() float64 {
 	return rand.Float64() * 10
 }

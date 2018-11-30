@@ -68,7 +68,7 @@ func Test_updatePosition(t *testing.T) {
 	p := pp.PricingProblem{}
 	pr := *p.MakeProblem(2, false)
 
-	np := updatePosition(p1, v, 3, &pr)
+	np := updatePosition(p1, v, &pr)
 	if len(np) != len(p1) {
 		t.Errorf("incorrect position length : %v", len(np))
 	}
