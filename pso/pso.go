@@ -3,7 +3,6 @@ package pso
 import (
 	"log"
 	"math/rand"
-	"time"
 
 	pp "github.com/aagoldingay/ci-cw-go/pricingproblem"
 )
@@ -94,7 +93,6 @@ func (p *Particle) Update(numGoods int, gBestPrices []float64, pr *pp.PricingPro
 func calculateVelocity(velocity, prices, pBestPrices, gBestPrices []float64) []float64 {
 	newVelocity := make([]float64, len(velocity))
 	for i := 0; i < len(velocity); i++ {
-		rand.Seed(time.Now().UnixNano())
 		r1, r2 := rand.Float64(), rand.Float64()
 		newVelocity[i] = (inertia * velocity[i]) + (cognitiveW * r1 * (pBestPrices[i] - prices[i])) + (socialW * r2 * (gBestPrices[i] - prices[i]))
 	}
