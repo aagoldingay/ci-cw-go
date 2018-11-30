@@ -18,32 +18,69 @@ const (
 // Particle is a struct representing a single particle entity
 // Will attempt to find optimal market pricing
 type Particle struct {
-	Prices, velocity, BestPrices []float64
-	CurrentRevenue, BestRevenue  float64
+	prices, velocity, bestPrices []float64
+	currentRevenue, bestRevenue  float64
+}
+
+// Swarm models a population of Particles along with the current best prices and revenue
+type Swarm struct {
+	Particles   []*Particle
+	BestPrices  []float64
+	BestRevenue float64
+	numGoods    int
+	problem     *pp.PricingProblem
+}
+
+// NewSwarm generates a new population of Particles
+func NewSwarm(numGoods int, numParticles int, pr *pp.PricingProblem) *Swarm {
+	sw := new(Swarm)
+	sw.problem = pr
+	sw.numGoods = numGoods
+	sw.Particles = make([]*Particle, numParticles)
+
+	for i := 0; i < numParticles; i++ {
+		sw.Particles[i] = sw.NewParticle(numGoods)
+		if sw.Particles[i].currentRevenue > sw.BestRevenue {
+			sw.BestPrices = sw.Particles[i].prices
+			sw.BestRevenue = sw.Particles[i].currentRevenue
+		}
+	}
+	return sw
 }
 
 // NewParticle generates and returns a new instanc of a particle
 // With a randomly generated design
-func NewParticle(numGoods int, pr *pp.PricingProblem) *Particle {
+func (sw *Swarm) NewParticle(numGoods int) *Particle {
 	p := new(Particle)
-	p.Prices = randomPrices(numGoods, pr)
-	p.velocity = initialVelocity(p.Prices, randomPrices(numGoods, pr))
-	p.BestPrices = make([]float64, len(p.Prices))
-	copy(p.BestPrices, p.Prices) //important to copy due to pass by reference
-	p.CurrentRevenue = evaluatePrices(p.Prices, pr)
-	p.BestRevenue = p.CurrentRevenue
+	p.prices = randomPrices(numGoods, sw.problem)
+	p.velocity = initialVelocity(p.prices, randomPrices(numGoods, sw.problem))
+	p.bestPrices = make([]float64, len(p.prices))
+	copy(p.bestPrices, p.prices) //important to copy due to pass by reference
+	p.currentRevenue = evaluatePrices(p.prices, sw.problem)
+	p.bestRevenue = p.currentRevenue
 	return p
+}
+
+// Update (Swarm) iterates over the population of particles to continue the progress of the swarm by one step
+func (sw *Swarm) Update() {
+	for i := 0; i < len(sw.Particles); i++ {
+		sw.Particles[i].Update(sw.numGoods, sw.BestPrices, sw.problem)
+		if sw.Particles[i].currentRevenue > sw.BestRevenue {
+			sw.BestPrices = sw.Particles[i].prices
+			sw.BestRevenue = sw.Particles[i].currentRevenue
+		}
+	}
 }
 
 // Update handles the repositioning and evaluation of a particle
 // param: gBestPrices passes information of the global best prices across a whole population of particles
 func (p *Particle) Update(numGoods int, gBestPrices []float64, pr *pp.PricingProblem) {
-	copy(p.velocity, calculateVelocity(p.velocity, p.Prices, p.BestPrices, gBestPrices))
-	copy(p.Prices, updatePosition(p.Prices, p.velocity, numGoods, pr))
-	p.CurrentRevenue = evaluatePrices(p.Prices, pr)
-	if p.CurrentRevenue > p.BestRevenue {
-		copy(p.BestPrices, p.Prices)
-		p.BestRevenue = p.CurrentRevenue
+	copy(p.velocity, calculateVelocity(p.velocity, p.prices, p.bestPrices, gBestPrices))
+	copy(p.prices, updatePosition(p.prices, p.velocity, numGoods, pr))
+	p.currentRevenue = evaluatePrices(p.prices, pr)
+	if p.currentRevenue > p.bestRevenue {
+		copy(p.bestPrices, p.prices)
+		p.bestRevenue = p.currentRevenue
 	}
 }
 

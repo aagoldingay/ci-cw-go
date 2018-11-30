@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"time"
 
 	"github.com/aagoldingay/ci-cw-go/ais"
 	pp "github.com/aagoldingay/ci-cw-go/pricingproblem"
@@ -19,6 +18,7 @@ type Revenue struct {
 }
 
 // AISSearch is a CI algorithm approach to finding the highest possible revenue
+// clones and mutates a population using elitism to generate better solutions
 func AISSearch(numGoods, numPopulation, replacement, cloneSizeFactor int) {
 	p := pp.PricingProblem{}
 	p = *p.MakeProblem(numGoods, false) //courseworkInstance
@@ -33,39 +33,19 @@ func AISSearch(numGoods, numPopulation, replacement, cloneSizeFactor int) {
 }
 
 // PSOSearch is a CI algorithm approach to finding the highest possible revenue
+// uses 'particles' to traverse the problem like a map, potentially encountering new, better results
 func PSOSearch(numGoods, numParticles int) {
 	p := pp.PricingProblem{}
 	p = *p.MakeProblem(numGoods, false) //courseworkInstance
 	// p = *p.MakeProblem(numGoods, true) //randomInstance
-	bestRev := Revenue{[]float64{}, 0.0}
-	particles := []*pso.Particle{}
-	fmt.Printf("Creating particles ...\n")
-	for i := 0; i < numParticles; i++ {
-		particles = append(particles, pso.NewParticle(numGoods, &p))
-		if particles[i].BestRevenue > bestRev.revenue {
-			bestRev.prices = particles[i].BestPrices
-			bestRev.revenue = particles[i].BestRevenue
-		}
-	}
-	fmt.Printf("Particles created, commencing search...\n")
 
-	timeout := time.Now().Add(10 * time.Second)
+	swarm := pso.NewSwarm(numGoods, numParticles, &p)
+	fmt.Printf("Particles created...\n")
+	fmt.Printf("Best : %v | %v\n", swarm.BestPrices, swarm.BestRevenue)
 
-	for {
-		if time.Now().After(timeout) {
-			fmt.Println("Time limit reached. Ended search")
-			break
-		}
-
-		for i := 0; i < len(particles); i++ {
-			particles[i].Update(numGoods, bestRev.prices, &p)
-
-			if particles[i].BestRevenue > bestRev.revenue {
-				bestRev.prices = particles[i].BestPrices
-				bestRev.revenue = particles[i].BestRevenue
-				fmt.Printf("New best: prices : %v | best revenue : %v\n", bestRev.prices, bestRev.revenue)
-			}
-		}
+	for i := 0; i < 100; i++ {
+		swarm.Update()
+		fmt.Printf("new best: prices : %v | revenue : %v\n", swarm.BestPrices, swarm.BestRevenue)
 	}
 }
 

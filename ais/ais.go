@@ -23,7 +23,7 @@ type ImmuneSystem struct {
 	NormalisedRevenue            float64
 }
 
-const bestFitness = 8000.0
+const bestFitness = 6000.0
 
 // NewImmuneSystem generates a new population of cells (prices and revenue)
 func NewImmuneSystem(numGoods, numPopulation, replacement, cloneSizeFactor int, pr *pp.PricingProblem) *ImmuneSystem {

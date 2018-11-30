@@ -9,21 +9,21 @@ import (
 func Test_NewParticle(t *testing.T) {
 	p := pp.PricingProblem{}
 	pr := *p.MakeProblem(2, false)
-	particle := NewParticle(2, &pr)
-	if len(particle.Prices) != 2 {
-		t.Errorf("particle prices design length not as expected : %v", len(particle.Prices))
+	sw := NewSwarm(2, 1, &pr)
+	if len(sw.Particles[0].prices) != 2 {
+		t.Errorf("particle prices design length not as expected : %v", len(sw.Particles[0].prices))
 	}
-	if particle.CurrentRevenue == 0.0 {
-		t.Errorf("particle current revenue not 0 : %v", particle.CurrentRevenue)
+	if sw.Particles[0].currentRevenue == 0.0 {
+		t.Errorf("particle current revenue not 0 : %v", sw.Particles[0].currentRevenue)
 	}
-	if len(particle.velocity) != 2 {
-		t.Errorf("particle velocity length not 2 : %v", len(particle.velocity))
+	if len(sw.Particles[0].velocity) != 2 {
+		t.Errorf("particle velocity length not 2 : %v", len(sw.Particles[0].velocity))
 	}
-	if len(particle.BestPrices) != 2 {
-		t.Errorf("particle best price length not 2 : %v", len(particle.BestPrices))
+	if len(sw.Particles[0].bestPrices) != 2 {
+		t.Errorf("particle best price length not 2 : %v", len(sw.Particles[0].bestPrices))
 	}
-	if particle.BestRevenue == 0.0 {
-		t.Errorf("particle length not calculated : %v", particle.BestRevenue)
+	if sw.Particles[0].bestRevenue == 0.0 {
+		t.Errorf("particle length not calculated : %v", sw.Particles[0].bestRevenue)
 	}
 }
 
