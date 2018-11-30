@@ -45,7 +45,7 @@ func PSOSearch(numGoods, numParticles int) {
 
 	for i := 0; i < 100; i++ {
 		swarm.Update()
-		fmt.Printf("new best: prices : %v | revenue : %v\n", swarm.BestPrices, swarm.BestRevenue)
+		fmt.Printf("[%v] new best: prices : %v | revenue : %v\n", i+1, swarm.BestPrices, swarm.BestRevenue)
 	}
 }
 
