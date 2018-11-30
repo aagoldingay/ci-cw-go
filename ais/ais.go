@@ -27,20 +27,22 @@ const bestFitness = 6000.0
 
 // NewImmuneSystem generates a new population of cells (prices and revenue)
 func NewImmuneSystem(numGoods, numPopulation, replacement, cloneSizeFactor int, pr *pp.PricingProblem) *ImmuneSystem {
+	// define and populate new immune system
 	is := new(ImmuneSystem)
 	is.problem = pr
 	is.replacement = replacement
 	is.cloneSizeFactor = cloneSizeFactor
 
+	// create population of cells
 	population := make([]TCell, numPopulation)
 	var totalFitness float64
 	bestCell := TCell{}
 
 	for i := 0; i < numPopulation; i++ {
-		prices, rev := is.randomPrices(numGoods)
-		population[i] = TCell{prices, rev}
+		prices, rev := is.randomPrices(numGoods) // get random prices and revenue
+		population[i] = TCell{prices, rev}       // assign prices and revenue to a cell, add to population
 		if i == 0 || bestCell.revenue < rev {
-			bestCell = population[i]
+			bestCell = population[i] // keep track of best cell revenue
 		}
 		totalFitness += population[i].revenue
 	}
@@ -63,6 +65,7 @@ func (is *ImmuneSystem) Update() {
 	is.NormalisedRevenue = is.BestCell.revenue / totalFitness
 }
 
+// clonalSelection creates clones and mutates at random, given bestFitness constant
 func (is *ImmuneSystem) clonalSelection() []TCell {
 	// create clones
 	clones := [][]TCell{}
@@ -86,6 +89,7 @@ func (is *ImmuneSystem) clonalSelection() []TCell {
 		}
 	}
 
+	// prepare for use in main population
 	returnedClones := []TCell{}
 	for i := 0; i < len(clones); i++ {
 		returnedClones = append(returnedClones, clones[i]...)
@@ -93,10 +97,12 @@ func (is *ImmuneSystem) clonalSelection() []TCell {
 	return returnedClones
 }
 
+// contiguousHyperMutation is the process of mutating any clones that are randomly selected
 func (is *ImmuneSystem) contiguousHyperMutation(prices []float64) TCell {
 	newPrices := []float64{}
 	var hotspotA, hotspotB int
 
+	// select two hotspots within the array
 	for hotspotA == hotspotB {
 		hotspotA = rand.Intn(len(prices) - 2)
 		hotspotA = rand.Intn(len(prices) - 1)
@@ -125,14 +131,16 @@ func (is *ImmuneSystem) contiguousHyperMutation(prices []float64) TCell {
 	return TCell{newPrices, rev}
 }
 
+// metaDynamics combines and sorts the clones and original population, and sorts by revenue
+// then cuts down the population, down to the size of the original population
 func (is *ImmuneSystem) metaDynamics(clones []TCell) []TCell {
 	// combine population and clones
 	newPopulation := []TCell{}
-	newPopulation = append(newPopulation, is.Cells...)
-	newPopulation = append(newPopulation, clones...)
+	newPopulation = append(newPopulation, is.Cells...) // append all original cells in the array
+	newPopulation = append(newPopulation, clones...)   // append all clones in the array
 	newPopulation = sortPopulation(newPopulation)
 
-	newPopulation = newPopulation[:len(is.Cells)] //cuts population down to original population size
+	newPopulation = newPopulation[:len(is.Cells)] // cuts population down to original population size
 
 	//replace with random solutions
 	for i := len(is.Cells) - is.replacement - 1; i < len(newPopulation); i++ {
@@ -145,7 +153,7 @@ func (is *ImmuneSystem) metaDynamics(clones []TCell) []TCell {
 // randomPrices generates random prices that evaluated as valid by the PricingProblem
 func (is *ImmuneSystem) randomPrices(numGoods int) ([]float64, float64) {
 	prices := make([]float64, numGoods)
-	for !is.problem.IsValid(prices) {
+	for !is.problem.IsValid(prices) { // while not valid, select prices at random
 		for i := 0; i < numGoods; i++ {
 			prices[i] = rand.Float64() * 10
 		}
