@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 
-	"github.com/aagoldingay/ci-cw-go/xlsxhandler"
-
 	"github.com/aagoldingay/ci-cw-go/algorithms"
 	pp "github.com/aagoldingay/ci-cw-go/pricingproblem"
 )
@@ -30,9 +28,9 @@ func runSingle(numGoods int, seed int64) {
 func runAll(numGoods int, seeds []int64) {
 	psoPopulation := 20
 
-	aisPopulation := 30
+	aisPopulation := 20
 	aisReplacement := 10
-	aisClonesFactor := 5
+	aisClonesFactor := 8
 
 	revenues := [][]float64{}
 
@@ -55,5 +53,5 @@ func runAll(numGoods int, seeds []int64) {
 	}
 	fmt.Printf("%v\n", revenues)
 
-	xlsxhandler.WriteXLSXParams(revenues, psoPopulation, aisPopulation, aisReplacement, aisClonesFactor)
+	//xlsxhandler.WriteXLSXParams(revenues, psoPopulation, aisPopulation, aisReplacement, aisClonesFactor)
 }
