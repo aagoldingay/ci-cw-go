@@ -17,10 +17,10 @@ type PricingProblem struct {
 // MakeProblem instantiates a new PricingProblem
 // n = number of Goods for the pricing problem
 // random = whether to use a random seed, else seed = 0
-func (p *PricingProblem) MakeProblem(n int, random bool) *PricingProblem {
-	rand.Seed(time.Now().UnixNano())
+func (p *PricingProblem) MakeProblem(n int, seed int64, random bool) *PricingProblem {
+	rand.Seed(time.Now().UnixNano()) // completely random
 	if !random {
-		rand.Seed(0)
+		rand.Seed(seed)
 	}
 	p.priceResponse = [][]float64{} // n by 2
 	for i := 0; i < n; i++ {

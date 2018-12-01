@@ -11,7 +11,7 @@ import (
 // TCell models a price/revenue
 type TCell struct {
 	prices  []float64
-	revenue float64
+	Revenue float64
 }
 
 // ImmuneSystem is an object containing cells and parameter values
@@ -41,14 +41,14 @@ func NewImmuneSystem(numGoods, numPopulation, replacement, cloneSizeFactor int, 
 	for i := 0; i < numPopulation; i++ {
 		prices, rev := is.randomPrices(numGoods) // get random prices and revenue
 		population[i] = TCell{prices, rev}       // assign prices and revenue to a cell, add to population
-		if i == 0 || bestCell.revenue < rev {
+		if i == 0 || bestCell.Revenue < rev {
 			bestCell = population[i] // keep track of best cell revenue
 		}
-		totalFitness += population[i].revenue
+		totalFitness += population[i].Revenue
 	}
 	is.Cells = population
 	is.BestCell = bestCell
-	is.NormalisedRevenue = bestCell.revenue / totalFitness
+	is.NormalisedRevenue = bestCell.Revenue / totalFitness
 	return is
 }
 
@@ -57,12 +57,12 @@ func (is *ImmuneSystem) Update() {
 	is.Cells = is.metaDynamics(is.clonalSelection())
 	var totalFitness float64
 	for i := 0; i < len(is.Cells); i++ {
-		if i == 0 || is.Cells[i].revenue > is.BestCell.revenue {
+		if i == 0 || is.Cells[i].Revenue > is.BestCell.Revenue {
 			is.BestCell = is.Cells[i]
 		}
-		totalFitness += is.Cells[i].revenue
+		totalFitness += is.Cells[i].Revenue
 	}
-	is.NormalisedRevenue = is.BestCell.revenue / totalFitness
+	is.NormalisedRevenue = is.BestCell.Revenue / totalFitness
 }
 
 // clonalSelection creates clones and mutates at random, given bestFitness constant
@@ -82,7 +82,7 @@ func (is *ImmuneSystem) clonalSelection() []TCell {
 	// mutation
 	for i := 0; i < len(clones); i++ {
 		for j := 0; j < len(clones[i]); j++ {
-			mutationRate := math.Exp(-1 * clones[i][j].revenue / bestFitness)
+			mutationRate := math.Exp(-1 * clones[i][j].Revenue / bestFitness)
 			if rand.Float64() <= mutationRate {
 				clones[i][j] = is.contiguousHyperMutation(clones[i][j].prices) // cant change
 			}
@@ -167,7 +167,7 @@ func sortPopulation(p []TCell) (sortedPopulation []TCell) {
 	sortedPopulation = make([]TCell, len(p))
 	copy(sortedPopulation, p)
 	sort.Slice(sortedPopulation, func(i, j int) bool {
-		return sortedPopulation[i].revenue > sortedPopulation[j].revenue
+		return sortedPopulation[i].Revenue > sortedPopulation[j].Revenue
 	})
 	return
 }

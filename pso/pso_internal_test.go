@@ -8,7 +8,7 @@ import (
 
 func Test_NewParticle(t *testing.T) {
 	p := pp.PricingProblem{}
-	pr := *p.MakeProblem(2, false)
+	pr := *p.MakeProblem(2, 0, false)
 	sw := NewSwarm(2, 1, &pr)
 	if len(sw.Particles[0].prices) != 2 {
 		t.Errorf("particle prices design length not as expected : %v", len(sw.Particles[0].prices))
@@ -54,7 +54,7 @@ func Test_initialVelocity(t *testing.T) {
 
 func Test_randomDesign(t *testing.T) {
 	p := pp.PricingProblem{}
-	pr := *p.MakeProblem(2, false)
+	pr := *p.MakeProblem(2, 0, false)
 	prices := randomPrices(2, &pr)
 	if !pr.IsValid(prices) {
 		t.Errorf("invalid prices found : %v", prices)
@@ -66,7 +66,7 @@ func Test_updatePosition(t *testing.T) {
 	p2 := []float64{0.5, 1.0}
 	v := initialVelocity(p1, p2)
 	p := pp.PricingProblem{}
-	pr := *p.MakeProblem(2, false)
+	pr := *p.MakeProblem(2, 0, false)
 
 	np := updatePosition(p1, v, &pr)
 	if len(np) != len(p1) {
