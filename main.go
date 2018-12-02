@@ -20,22 +20,26 @@ func runSingle(numGoods int, seed int64) {
 	p = *p.MakeProblem(numGoods, seed, false) //courseworkInstance
 	// p = *p.MakeProblem(numGoods, seed, true) //randomInstance
 
-	// algorithms.RandomSearch(numGoods, &p) //numGoods
-	algorithms.PSOSearch(numGoods, 25, &p) //numGoods, numParticles
-	// algorithms.AISSearch(numGoods, 30, 10, 5, &p) //numGoods, numPopulation, replacement, cloneSizeFactor
+	algorithms.RandomSearch(numGoods, false, &p) //numGoods
+	// algorithms.PSOSearch(numGoods, 25, false, &p) //numGoods, numParticles
+	// algorithms.AISSearch(numGoods, 30, 10, 5, false, &p) //numGoods, numPopulation, replacement, cloneSizeFactor
 }
 
 func runAll(numGoods int, seeds []int64) {
+	// configurable algorithm parameters
 	psoPopulation := 20
-
 	aisPopulation := 20
 	aisReplacement := 10
 	aisClonesFactor := 8
 
-	revenues := [][]float64{}
+	// revenue trackers
+	finalRevenues := [][]float64{}
+	// randomRevenues := [][]float64{}
+	// psoRevenues := [][]float64{}
+	// aisRevenues := [][]float64{}
 
 	for i := 0; i < 3; i++ {
-		revenues = append(revenues, make([]float64, len(seeds)))
+		finalRevenues = append(finalRevenues, make([]float64, len(seeds)))
 	}
 
 	for i := 0; i < len(seeds); i++ {
@@ -43,15 +47,24 @@ func runAll(numGoods int, seeds []int64) {
 		p = *p.MakeProblem(numGoods, seeds[i], false) //courseworkInstance
 		// p = *p.MakeProblem(numGoods, true) //randomInstance
 
+		// data structures for returned list of revenues per step of each process (for xlsx printing)
+		//var ran, pso, ais []float64
+
 		fmt.Printf("----------\nRandom Search\n----------\n")
-		revenues[0][i] = algorithms.RandomSearch(numGoods, &p)
+		finalRevenues[0][i], _ = algorithms.RandomSearch(numGoods, false, &p)
+		//randomRevenues = append(randomRevenues, ran)
 
 		fmt.Printf("----------\nPSO\n----------\n")
-		revenues[1][i] = algorithms.PSOSearch(numGoods, psoPopulation, &p)
-		fmt.Printf("----------\nAIS\n----------\n")
-		revenues[2][i] = algorithms.AISSearch(numGoods, aisPopulation, aisReplacement, aisClonesFactor, &p) //numGoods, numPopulation, replacement, cloneSizeFactor
-	}
-	fmt.Printf("%v\n", revenues)
+		finalRevenues[1][i], _ = algorithms.PSOSearch(numGoods, psoPopulation, false, &p)
+		//psoRevenues = append(psoRevenues, pso)
 
-	//xlsxhandler.WriteXLSXParams(revenues, psoPopulation, aisPopulation, aisReplacement, aisClonesFactor)
+		fmt.Printf("----------\nAIS\n----------\n")
+		finalRevenues[2][i], _ = algorithms.AISSearch(numGoods, aisPopulation, aisReplacement, aisClonesFactor, false, &p) //numGoods, numPopulation, replacement, cloneSizeFactor
+		//aisRevenues = append(aisRevenues, ais)
+	}
+	fmt.Printf("%v\n", finalRevenues)
+
+	// xlsx output
+	// xlsxhandler.WriteXLSXParams(finalRevenues, psoPopulation, aisPopulation, aisReplacement, aisClonesFactor)
+	// xlsxhandler.WriteXLSXRevenues(seeds, randomRevenues, psoRevenues, aisRevenues)
 }

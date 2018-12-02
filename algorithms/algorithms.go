@@ -19,21 +19,27 @@ type Revenue struct {
 
 // AISSearch is a CI algorithm approach to finding the highest possible revenue
 // clones and mutates a population using elitism to generate better solutions
-func AISSearch(numGoods, numPopulation, replacement, cloneSizeFactor int, p *pp.PricingProblem) float64 {
+func AISSearch(numGoods, numPopulation, replacement, cloneSizeFactor int, trace bool, p *pp.PricingProblem) (float64, []float64) {
+	revenueTrack := []float64{}
 	population := ais.NewImmuneSystem(numGoods, numPopulation, replacement, cloneSizeFactor, p)
 	fmt.Printf("best cell: %v\n", population.BestCell)
 
 	for i := 0; i < 100; i++ {
 		population.Update()
 		fmt.Printf("[%v] best cell : %v\n", i+1, population.BestCell)
+
+		// only track if required
+		if trace {
+			revenueTrack = append(revenueTrack, population.BestCell.Revenue)
+		}
 	}
-	return population.BestCell.Revenue
+	return population.BestCell.Revenue, revenueTrack
 }
 
 // PSOSearch is a CI algorithm approach to finding the highest possible revenue
 // uses 'particles' to traverse the problem like a map, potentially encountering new, better results
-func PSOSearch(numGoods, numParticles int, p *pp.PricingProblem) float64 {
-
+func PSOSearch(numGoods, numParticles int, trace bool, p *pp.PricingProblem) (float64, []float64) {
+	revenueTrack := []float64{}
 	swarm := pso.NewSwarm(numGoods, numParticles, p)
 	fmt.Printf("Particles created...\n")
 	fmt.Printf("Best : %v | %v\n", swarm.BestPrices, swarm.BestRevenue)
@@ -41,13 +47,20 @@ func PSOSearch(numGoods, numParticles int, p *pp.PricingProblem) float64 {
 	for i := 0; i < 100; i++ {
 		swarm.Update()
 		fmt.Printf("[%v] new best: prices : %v | revenue : %v\n", i+1, swarm.BestPrices, swarm.BestRevenue)
+
+		// only track if required
+		if trace {
+			revenueTrack = append(revenueTrack, swarm.BestRevenue)
+		}
 	}
-	return swarm.BestRevenue
+	return swarm.BestRevenue, revenueTrack
 }
 
 // RandomSearch is a heuristic method of attempting to find the highest possible revenue
 // Approach : Create an array of random prices len(numGoods) and compare against the current best Revenue
-func RandomSearch(numGoods int, p *pp.PricingProblem) float64 {
+// (This method was translated from the provided Java code)
+func RandomSearch(numGoods int, trace bool, p *pp.PricingProblem) (float64, []float64) {
+	revenueTrack := []float64{}
 	prices := make([]float64, numGoods)
 	newPrices := make([]float64, numGoods)
 
@@ -75,7 +88,12 @@ func RandomSearch(numGoods int, p *pp.PricingProblem) float64 {
 			bestRevenue.revenue = newRevenue
 			fmt.Printf("New best revenue : %v \n", bestRevenue)
 		}
+
+		// only track if required
+		if trace {
+			revenueTrack = append(revenueTrack, bestRevenue.revenue)
+		}
 	}
 	fmt.Printf("Final best revenue : %v\n", bestRevenue)
-	return bestRevenue.revenue
+	return bestRevenue.revenue, revenueTrack
 }

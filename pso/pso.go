@@ -10,7 +10,7 @@ import (
 //movement weightings
 const (
 	inertia    = 0.721 // weighting of momentum maintained between steps
-	cognitiveW = 1.12  // (default) 1.1193 // weighting towards personal best position
+	cognitiveW = 1.2   // (default) 1.1193 // weighting towards personal best position
 	socialW    = 1.1   // (default) 1.1193 // weighting towards global best position
 )
 
