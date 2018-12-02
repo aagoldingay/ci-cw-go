@@ -9,7 +9,8 @@ import (
 
 func main() {
 	numGoods := 20
-	seeds := []int64{0, 38, 113}
+	// seeds := []int64{0, 38, 113} // simple, for parameter configuration
+	seeds := []int64{0, 38, 113, 100, 50, 25, 75, 13, 55, 98, 187, 4, 12, 42, 66, 72, 30, 32, 10, 24, 49, 35, 88, 61, 19, 23, 14, 91, 102, 147}
 
 	//runSingle(numGoods, seeds[0])
 	runAll(numGoods, seeds)
@@ -38,7 +39,7 @@ func runAll(numGoods int, seeds []int64) {
 	// psoRevenues := [][]float64{}
 	// aisRevenues := [][]float64{}
 
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 3; i++ { // 3 algorithms
 		finalRevenues = append(finalRevenues, make([]float64, len(seeds)))
 	}
 
