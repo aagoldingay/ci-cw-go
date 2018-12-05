@@ -1,9 +1,11 @@
 # ci-cw-go
 This project is an implementation of two Computational Intelligence algorithms to help solve a generic problem of Market Pricing.
 
+Particle Swarm Optimisation and Artificial Immune System are implemented.
+
 NOTE: This is a coursework project.
 
-PricingProblem was supplied by the University in Java, I have translated this code into Go, testing it alongside the Java version for consistency.
+NOTE: PricingProblem was supplied by the University in Java, I have translated this code into Go, testing it alongside the Java version for consistency.
 
 ## Set Up
 This project was developed using Go v1.11.2
