@@ -30,7 +30,7 @@ func AISSearch(numGoods, numPopulation, replacement, cloneSizeFactor int, trace 
 	tick := time.Tick(5 * time.Millisecond)
 
 	for { //for i := 0; i < 100; i++ {
-		// if testing with time, uncomment switch statement, move inner case <-timeout out of for loop
+		// if testing with steps, comment switch statement, move inner case <-timeout out of for loop
 
 		select {
 		// timeout reached, stop running
@@ -63,7 +63,7 @@ func PSOSearch(numGoods, numParticles int, trace bool, p *pp.PricingProblem) (fl
 	tick := time.Tick(5 * time.Millisecond)
 
 	for { //for i := 0; i < 100; i++ {
-		// if testing with time, uncomment switch statement, move inner case <-timeout out of for loop
+		// if testing with steps, comment switch statement, move inner case <-timeout out of for loop
 
 		select {
 		// timeout reached, stop running
@@ -106,7 +106,7 @@ func RandomSearch(numGoods int, trace bool, p *pp.PricingProblem) (float64, []fl
 	tick := time.Tick(5 * time.Millisecond)
 
 	for { //for i := 0; i < 100; i++ {
-		// if testing with time, uncomment switch statement, move inner case <-timeout out of for loop
+		// if testing with steps, comment switch statement, move inner case <-timeout out of for loop
 
 		select {
 		// timeout reached, stop running
